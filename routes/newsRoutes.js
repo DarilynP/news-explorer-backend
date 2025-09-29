@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   const { q } = req.query;
+  console.log("Search query:", q);
   if (!q) return res.status(400).json({ error: "Missing search query" });
 
   try {

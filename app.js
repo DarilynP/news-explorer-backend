@@ -10,26 +10,39 @@ dotenv.config();
 
 const app = express();
 
-// --- CORS middleware ---
-app.use(cors({
-    origin: "http://localhost:5173",
+// --- CORS middleware FIRST ---
+app.use(
+  cors({
+    origin: "http://localhost:5173", 
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type"], // add "Authorization" if needed
-    credentials: false, // set to false for now
-  }));
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, 
+  })
+);
 
+// --- Body parser ---
 app.use(express.json());
+
+// // --- Test route for CORS ---
+// app.get("/api/test", (req, res) => {
+//   console.log("Test route hit");
+//   res.json({ message: "CORS works!" });
+// });
 
 // --- Routes ---
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
 
 // --- MongoDB connection ---
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
- 
+// --- Start server ---
+// const PORT = process.env.PORT || 3001;
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
+
 export default app;
