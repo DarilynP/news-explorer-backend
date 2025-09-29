@@ -4,22 +4,32 @@ export async function getNews(req, res) {
   const searchTerm = req.query.q || "general";
   const apiKey = process.env.NEWS_API_KEY;
 
-  console.log("Received search term:", searchTerm);
-  console.log("Using API key:", apiKey);
-  console.log("NEWS_API_KEY:", process.env.NEWS_API_KEY);
+  if (!searchTerm.trim()) {
+    return res.status(400).json({ error: "Please enter a keyword" });
+  }
 
+  if (!apiKey) {
+    return res.status(500).json({ error: "API key not found" });
+  }
 
   try {
-    const url = `https://nomoreparties.co/news/v2/everything?q=${encodeURIComponent(searchTerm)}&pageSize=10&apiKey=${apiKey}`;
-    console.log("Fetching URL:", url);
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://nomoreparties.co/news/v2/everything"
+        : "https://gnews.io/api/v4/search";
+
+    const url = `${baseUrl}?q=${encodeURIComponent(
+      searchTerm
+    )}&max=10&lang=en&token=${apiKey}`;
+
+    console.log("Fetching news URL:", url);
 
     const response = await fetch(url);
-    console.log("NewsAPI response status:", response.status);
+    if (!response.ok)
+      throw new Error(`Status ${response.status}: ${response.statusText}`);
 
     const data = await response.json();
-    console.log("Fetched articles count:", data.articles.length);
-
-    res.json(data.articles);
+    res.json(data.articles || []);
   } catch (err) {
     console.error("Error fetching news:", err);
     res.status(500).json({ error: "Server error" });

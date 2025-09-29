@@ -3,7 +3,7 @@ import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import cors from "cors";
-import newsRouter from "./routes/news.js"; // your route file
+import newsRouter from "./routes/news.js"; 
 
 // Load environment variables
 dotenv.config();
