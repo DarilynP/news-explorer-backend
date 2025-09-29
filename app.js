@@ -1,22 +1,29 @@
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({
+  path: path.resolve("/Users/darip/news-explorer-backend/.env"),
+});
+console.log("MONGO_URI =", process.env.MONGO_URI);
+
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+
 import cors from "cors";
 
 import authRoutes from "./routes/authRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 
-dotenv.config();
-
 const app = express();
+const mongoUri = process.env.MONGO_URI;
+console.log("MONGO_URI =", process.env.MONGO_URI);
 
 // --- CORS middleware FIRST ---
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, 
+    credentials: true,
   })
 );
 
@@ -34,10 +41,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
 
 // --- MongoDB connection ---
+
+if (!mongoUri) {
+  console.error("❌ MONGO_URI is not defined!");
+  process.exit(1); // stop server
+}
+
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .connect(mongoUri)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // --- Start server ---
 // const PORT = process.env.PORT || 3001;
