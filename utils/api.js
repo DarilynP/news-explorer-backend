@@ -10,7 +10,7 @@ console.log("Using API_KEY:", API_KEY);
 export async function getNews(search) {
   try {
     const res = await fetch(
-      `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+      `https://nomoreparties.co/news/v2/everything?q=${encodeURIComponent(
         search
       )}&apiKey=${API_KEY}`
     );
