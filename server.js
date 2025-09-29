@@ -1,8 +1,11 @@
+// server.js
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import cors from "cors";
+import newsRouter from "./routes/news.js"; // your route file
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -16,28 +19,17 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
-);
+)
+app.use(express.json());
 
-// --- News endpoint ---
-app.get("/api/news", async (req, res) => {
-  const query = req.query.q;
-  if (!query) return res.status(400).json({ error: "Query required" });
+app.use("/api/news", newsRouter);
 
-  const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(
-    query
-  )}&token=${process.env.NEWS_API_KEY}&lang=en`;
 
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch news" });
-  }
+app.get("/", (req, res) => {
+  res.send("News API backend is running");
 });
 
-
+// --- Start server ---
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

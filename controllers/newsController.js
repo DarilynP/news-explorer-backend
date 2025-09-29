@@ -10,7 +10,7 @@ export async function getNews(req, res) {
 
 
   try {
-    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(searchTerm)}&pageSize=10&apiKey=${apiKey}`;
+    const url = `https://nomoreparties.co/news/v2/everything?q=${encodeURIComponent(searchTerm)}&pageSize=10&apiKey=${apiKey}`;
     console.log("Fetching URL:", url);
 
     const response = await fetch(url);
